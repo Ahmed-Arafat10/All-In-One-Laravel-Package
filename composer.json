@@ -4,7 +4,7 @@
     "type": "library",
     "license": "MIT",
     "version": "1.0.1",
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
             "AhmedArafat\\AllInOne\\": "src/"
