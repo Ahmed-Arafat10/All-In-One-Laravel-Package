@@ -24,7 +24,7 @@ class AllInOneServiceProvider extends ServiceProvider
             __DIR__ . '/Console' => app_path('Console/Commands/'),
             __DIR__ . '/Exceptions' => app_path('Exceptions'),
             __DIR__ . '/Middleware' => app_path('Http/Middleware'),
-        ]);
+        ],'ahmed-arafat/all-in-one');
     }
 
     public function register()
