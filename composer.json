@@ -1,0 +1,36 @@
+{
+    "name": "ahmed-arafat/all-in-one",
+    "description": "test",
+    "type": "library",
+    "license": "MIT",
+    "version": "1.0.1",
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "AhmedArafat\\AllInOne\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ahmed Arafat",
+            "email": "ahmedmoyousry.bis@gmail.com"
+        }
+    ],
+    "keywords": [
+        "sort",
+        "filter",
+        "search",
+        "file upload",
+        "excel",
+        "enum",
+        "jwt",
+        "validation rules",
+        "git",
+        "migrtaions",
+        "database seeder"
+    ],
+    "require": {
+        "maatwebsite/excel": "3.1.58",
+        "tymon/jwt-auth": "*"
+    }
+}
