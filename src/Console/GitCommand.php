@@ -1,6 +1,6 @@
 <?php
 
-namespace AhmedArafat\AllInOne\Commands;
+namespace AhmedArafat\AllInOne\Console;
 
 use Carbon\Carbon;
 use Illuminate\Console\Command;

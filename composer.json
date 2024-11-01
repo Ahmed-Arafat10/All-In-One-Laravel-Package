@@ -30,6 +30,7 @@
         "database seeder"
     ],
     "require": {
+        "php": ">=8.1",
         "maatwebsite/excel": "3.1.58",
         "tymon/jwt-auth": "*"
     }

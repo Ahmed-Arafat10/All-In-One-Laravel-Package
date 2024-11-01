@@ -1,6 +1,6 @@
 <?php
 
-namespace AhmedArafat\AllInOne\Commands;
+namespace AhmedArafat\AllInOne\Console;
 
 use Exception;
 use Illuminate\Console\Command;
