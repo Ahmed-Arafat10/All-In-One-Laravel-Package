@@ -1,5 +1,7 @@
 <?php
 
+namespace AhmedArafat\AllInOne;
+
 use AhmedArafat\AllInOne\Console\DatabaseInitialSeedersCommand;
 use AhmedArafat\AllInOne\Console\GitCommand;
 use AhmedArafat\AllInOne\Middleware\JwtMiddleware;
@@ -24,7 +26,7 @@ class AllInOneServiceProvider extends ServiceProvider
             __DIR__ . '/Console' => app_path('Console/Commands/'),
             __DIR__ . '/Exceptions' => app_path('Exceptions'),
             __DIR__ . '/Middleware' => app_path('Http/Middleware'),
-        ],'ahmed-arafat/all-in-one');
+        ], 'ahmed-arafat/all-in-one');
     }
 
     public function register()
