@@ -5,8 +5,10 @@ namespace AhmedArafat\AllInOne;
 use AhmedArafat\AllInOne\Console\DatabaseInitialSeedersCommand;
 use AhmedArafat\AllInOne\Console\GitCommand;
 use AhmedArafat\AllInOne\Middleware\JwtMiddleware;
+
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+
 
 class AllInOneServiceProvider extends ServiceProvider
 {
@@ -28,7 +30,6 @@ class AllInOneServiceProvider extends ServiceProvider
             __DIR__ . '/Middleware' => app_path('Http/Middleware'),
         ], 'ahmed-arafat/all-in-one');
     }
-
     public function register()
     {
         parent::register();

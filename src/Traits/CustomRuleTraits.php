@@ -14,14 +14,16 @@ trait CustomRuleTraits
      * @param bool $hasMixed
      * @param bool $hasNumbers
      * @param bool $hasSymbols
+     * @param bool $uncompromised
      * @return Password
      */
-    public function strongPassword(int $min = 8, bool $hasMixed = true, bool $hasNumbers = true, bool $hasSymbols = true): Password
+    public function strongPassword(int $min = 8, bool $hasMixed = true, bool $hasNumbers = true, bool $hasSymbols = true, bool $uncompromised = true): Password
     {
         $passwordRule = Password::min($min);
         if ($hasMixed) $passwordRule->mixedCase();
         if ($hasNumbers) $passwordRule->numbers();
         if ($hasSymbols) $passwordRule->symbols();
+        if ($uncompromised) $passwordRule->uncompromised();
         return $passwordRule;
     }
 
