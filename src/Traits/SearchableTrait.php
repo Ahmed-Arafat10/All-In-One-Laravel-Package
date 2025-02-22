@@ -7,20 +7,44 @@ use Illuminate\Database\Eloquent\Builder;
 trait SearchableTrait
 {
     /**
-     * @param Builder $q
+     * @param Builder $query
      * @param $columnsArray
      * @param string $table
      * @param string $search
      * @return void
      */
-    private function searchBuilder(Builder &$q, $columnsArray, string $table, string $search): void
+    private function searchBuilder(Builder &$query, $columnsArray, string $table, string $search): void
     {
-        $i = 0;
-        foreach ($columnsArray as $col) {
-            $method = !$i++ ? 'where' : 'orWhere';
-            $tableColName = $table . '.' . $col;
-            $q->{$method}($tableColName, 'LIKE', "%$search%");
-        }
+        $words = explode(' ', $search);
+        $query->where(function ($query) use ($columnsArray, $table, $words) {
+            foreach ($columnsArray as $col) {
+                $tableColName = $table . '.' . $col;
+                foreach ($words as $word) {
+                    $query->orWhere($tableColName, 'LIKE', "%$word%");
+                }
+            }
+        });
+        $binding = [];
+        $matchCountExpression = $this->matchCountExpressionBuilder($columnsArray, $table, $words, $binding);
+        $query->selectRaw('*, (' . $matchCountExpression . ') as match_count')
+            ->orderByDesc('match_count');
+    }
+
+    /**
+     * @param array $columnsArray
+     * @param string $table
+     * @param array $words
+     * @param array $binding
+     * @return string
+     */
+    private function matchCountExpressionBuilder(array &$columnsArray, string &$table, array &$words, array $binding): string
+    {
+        return implode(' + ', array_map(function ($col) use (&$table, &$words, &$binding) {
+            return implode(' + ', array_map(function ($word) use (&$table, &$col, &$binding) {
+                $binding[] = "%$word%";
+                return "CASE WHEN $table.$col LIKE ? THEN 1 ELSE 0 END"; // . PHP_EOL
+            }, $words));
+        }, $columnsArray));
     }
 
     /**
@@ -28,11 +52,13 @@ trait SearchableTrait
      * @param array $columns
      * @param $search
      * @param $relation
+     * @param $countIterations
      * @return void
      */
-    public function searchInSameRelation(Builder &$q, array &$columns, $search, $relation): void
+    public function searchInSameRelation(Builder &$q, array &$columns, $search, $relation, &$countIterations): void
     {
-        $q->where(function ($q) use (&$columns, &$search, &$relation) {
+        $relationshipMethodName = !$countIterations ? 'where' : 'orWhere';
+        $q->{$relationshipMethodName}(function ($q) use (&$columns, &$search, &$relation) {
             $this->searchBuilder($q, $columns, $relation, $search);
         });
     }
@@ -43,11 +69,13 @@ trait SearchableTrait
      * @param $search
      * @param $relation
      * @param $methodName
+     * @param $countIterations
      * @return void
      */
-    public function searchInAnotherRelation(Builder &$q, array &$columns, $search, $relation, $methodName): void
+    public function searchInAnotherRelation(Builder &$q, array &$columns, $search, $relation, $methodName, &$countIterations): void
     {
-        $q->orWhereHas($methodName, function ($q2) use (&$search, &$columns, &$relation) {
+        $relationshipMethodName = !$countIterations ? 'whereHas' : 'orWhereHas';
+        $q->{$relationshipMethodName}($methodName, function ($q2) use (&$search, &$columns, &$relation) {
             $q2->where(function ($q3) use (&$search, &$columns, &$relation) {
                 $this->searchBuilder($q3, $columns, $relation, $search);
             });
@@ -56,17 +84,18 @@ trait SearchableTrait
 
     /**
      * @param Builder $q
-     * @param string $searchKey
      * @return Builder
      */
-    public function scopeSearch(Builder $q, string $searchKey = 'search'): Builder
+    public function scopeSearch(Builder $q): Builder
     {
-        #TODO: handle case that you have to explode string if space exists like "ahmed arafat", it will be like "%ahmed arafat%" and for first/second/last name it will fails
-        if (request()->query($searchKey) == null || !isset($this->searchableColumns)) return $q;
-        $search = request()->query($searchKey);
+        $search = request()->query('search');
+        if (empty($search) || !isset($this->searchableColumns)) return $q;
+        $countIterations = 0;
         foreach ($this->searchableColumns as $relation => $keys) {
-            if ($relation == $this->getTable()) $this->searchInSameRelation($q, $keys['columns'], $search, $relation);
-            else $this->searchInAnotherRelation($q, $keys['columns'], $search, $relation, $keys['methodName']);
+            $relation = ltrim($relation, '-'); // if a table name exists in the array, add another key with - at the beginning
+            if ($relation == $this->getTable()) $this->searchInSameRelation($q, $keys['columns'], $search, $relation, $countIterations);
+            else $this->searchInAnotherRelation($q, $keys['columns'], $search, $relation, $keys['methodName'], $countIterations);
+            $countIterations++;
         }
         //$q->dd();
         return $q;
