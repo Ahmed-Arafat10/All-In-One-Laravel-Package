@@ -5,6 +5,7 @@ namespace AhmedArafat\AllInOne\Console;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use function Laravel\Prompts\progress;
 
 class DatabaseInitialSeedersCommand extends Command
 {
@@ -22,16 +23,39 @@ class DatabaseInitialSeedersCommand extends Command
      */
     protected $description = 'Run All Database Required Seeders';
 
+    private $allSeedersObjects = [];
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->allSeedersObjects = [
+            //new XyzSeeder(),
+        ];
+    }
+
+    private function executeAllSeeders()
+    {
+        DB::transaction(function () {
+            foreach ($this->allSeedersObjects as $key => $object) {
+                $object->run();
+                //dump($key);
+            }
+        });
+    }
+
     /**
      * Execute the console command.
      * @throws Exception
      */
     public function handle(): void
     {
-        DB::transaction(function () {
-            # Execute all your seeders here, like this:
-            //(new XyzSeeder())->run();
-        });
-        $this->info("Done Inserting In DataBase");
+        progress(
+            "Seeding Database ...",
+            count($this->allSeedersObjects),
+            function ($num) {
+                $this->allSeedersObjects[$num]->run();
+            }
+        );
+        $this->info("Done Seeding Database <3");
     }
 }
