@@ -16,14 +16,12 @@ trait SearchableTrait
     private function searchBuilder(Builder &$query, $columnsArray, string $table, string $search): void
     {
         $words = explode(' ', $search);
-        $query->where(function ($query) use ($columnsArray, $table, $words) {
-            foreach ($columnsArray as $col) {
-                $tableColName = $table . '.' . $col;
-                foreach ($words as $word) {
-                    $query->orWhere($tableColName, 'LIKE', "%$word%");
-                }
+        foreach ($columnsArray as $col) {
+            $tableColName = $table . '.' . $col;
+            foreach ($words as $word) {
+                $query->orWhere($tableColName, 'LIKE', "%$word%");
             }
-        });
+        }
         $binding = [];
         $matchCountExpression = $this->matchCountExpressionBuilder($columnsArray, $table, $words, $binding);
         $query->selectRaw('*, (' . $matchCountExpression . ') as match_count')
