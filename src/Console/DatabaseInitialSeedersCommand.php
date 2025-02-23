@@ -21,7 +21,7 @@ class DatabaseInitialSeedersCommand extends Command
      *
      * @var string
      */
-    protected string $description = 'Run All Database Required Seeders';
+    protected $description = 'Run All Database Required Seeders';
 
     private array $allSeedersObjects = [];
 
