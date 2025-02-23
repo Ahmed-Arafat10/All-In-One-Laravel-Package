@@ -14,16 +14,16 @@ class DatabaseInitialSeedersCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'db:setup';
+    protected string $signature = 'db:setup';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Run All Database Required Seeders';
+    protected string $description = 'Run All Database Required Seeders';
 
-    private $allSeedersObjects = [];
+    private array $allSeedersObjects = [];
 
     public function __construct()
     {
@@ -38,7 +38,6 @@ class DatabaseInitialSeedersCommand extends Command
         DB::transaction(function () {
             foreach ($this->allSeedersObjects as $key => $object) {
                 $object->run();
-                //dump($key);
             }
         });
     }
