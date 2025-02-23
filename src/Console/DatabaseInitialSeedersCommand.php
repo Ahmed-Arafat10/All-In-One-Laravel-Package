@@ -14,7 +14,7 @@ class DatabaseInitialSeedersCommand extends Command
      *
      * @var string
      */
-    protected string $signature = 'db:setup';
+    protected $signature = 'db:setup';
 
     /**
      * The console command description.
