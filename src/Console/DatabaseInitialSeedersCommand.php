@@ -14,14 +14,14 @@ class DatabaseInitialSeedersCommand extends Command
      *
      * @var string
      */
-    protected string $signature = 'db:setup';
+    protected $signature = 'db:setup';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected string $description = 'Run All Database Required Seeders';
+    protected $description = 'Run All Database Required Seeders';
 
     private array $allSeedersObjects = [];
 
