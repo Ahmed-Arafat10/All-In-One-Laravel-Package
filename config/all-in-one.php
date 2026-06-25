@@ -6,6 +6,7 @@ return [
         // App\Database\Seeders\RoleSeeder::class,
     ],
     'smtpData' => [
+        'isTesting' => true,
         'dailyLimit' => 500,
         'accounts' => [
             [
