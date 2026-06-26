@@ -21,7 +21,7 @@ trait FileHelper
      * - storage/app/public/data.json    → path: "data.json", disk: "public"
      *
      * @param string $path Relative path inside the disk root.
-     * @param string $disk Filesystem disk name (default: local).
+     * @param string $disk Filesystem disk name (default: local) or database laravel directory.
      *
      * @return array Decoded JSON content as associative array.
      *
@@ -30,16 +30,28 @@ trait FileHelper
      */
     private function getJsonFileContent(string $path, string $disk = 'local'): array
     {
-        if (!Storage::disk($disk)->exists($path)) {
-            throw new RuntimeException("File [$path] not found on disk [$disk].");
+        if ($disk === 'database') {
+            $fullPath = database_path($path);
+
+            if (!file_exists($fullPath)) {
+                throw new RuntimeException("File [$path] not found in database directory.");
+            }
+
+            $json = file_get_contents($fullPath);
+        } else {
+            if (!Storage::disk($disk)->exists($path)) {
+                throw new RuntimeException("File [$path] not found on disk [$disk].");
+            }
+
+            $json = Storage::disk($disk)->get($path);
         }
-        $content = json_decode(
-            Storage::disk($disk)->get($path),
-            true
-        );
+
+        $content = json_decode($json, true);
+
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new RuntimeException("Invalid JSON in file [$path].");
         }
+
         return $content;
     }
 
